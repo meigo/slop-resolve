@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m py_compile resolve_agent.py)",
+      "Bash(python -m py_compile executor.py)",
+      "Bash(python -m py_compile resolve_connection.py)",
+      "Bash(python -m py_compile resolve_api_ref.py)",
+      "Bash(python -m py_compile setup.py)",
+      "Bash(pip show:*)",
+      "Bash(ruff check:*)",
+      "Bash(python -m pytest tests/ -v)"
+    ]
+  }
+}
