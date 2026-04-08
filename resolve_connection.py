@@ -1,37 +1,40 @@
 import sys
 import os
+import platform
+
+
+def _get_resolve_paths():
+    """Return (modules_path, script_api, fusion_lib) for the current platform."""
+    system = platform.system()
+
+    if system == "Darwin":
+        modules_path = "/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/Modules"
+        script_api = "/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting"
+        fusion_lib = "/Applications/DaVinci Resolve/DaVinci Resolve.app/Contents/Libraries/Fusion/fusionscript.so"
+    elif system == "Linux":
+        modules_path = "/opt/resolve/Developer/Scripting/Modules"
+        script_api = "/opt/resolve/Developer/Scripting"
+        fusion_lib = "/opt/resolve/libs/Fusion/fusionscript.so"
+    else:
+        # Windows
+        programdata = os.environ.get("PROGRAMDATA", r"C:\ProgramData")
+        programfiles = os.environ.get("PROGRAMFILES", r"C:\Program Files")
+        modules_path = os.path.join(programdata, "Blackmagic Design", "DaVinci Resolve", "Support", "Developer", "Scripting", "Modules")
+        script_api = os.path.join(programdata, "Blackmagic Design", "DaVinci Resolve", "Support", "Developer", "Scripting")
+        fusion_lib = os.path.join(programfiles, "Blackmagic Design", "DaVinci Resolve", "fusionscript.dll")
+
+    return modules_path, script_api, fusion_lib
 
 
 def connect():
     """Connect to running DaVinci Resolve instance. Returns (resolve, error_message)."""
+    modules_path, script_api, fusion_lib = _get_resolve_paths()
+
     # Add Resolve scripting modules to path
-    modules_path = os.path.join(
-        os.environ.get("PROGRAMDATA", r"C:\ProgramData"),
-        "Blackmagic Design",
-        "DaVinci Resolve",
-        "Support",
-        "Developer",
-        "Scripting",
-        "Modules",
-    )
     if modules_path not in sys.path:
         sys.path.append(modules_path)
 
     # Set environment variables if not already set
-    script_api = os.path.join(
-        os.environ.get("PROGRAMDATA", r"C:\ProgramData"),
-        "Blackmagic Design",
-        "DaVinci Resolve",
-        "Support",
-        "Developer",
-        "Scripting",
-    )
-    fusion_lib = os.path.join(
-        os.environ.get("PROGRAMFILES", r"C:\Program Files"),
-        "Blackmagic Design",
-        "DaVinci Resolve",
-        "fusionscript.dll",
-    )
     os.environ.setdefault("RESOLVE_SCRIPT_API", script_api)
     os.environ.setdefault("RESOLVE_SCRIPT_LIB", fusion_lib)
 
@@ -40,12 +43,14 @@ def connect():
     except ImportError:
         return None, (
             f"Could not import DaVinciResolveScript.\n"
+            f"Platform: {platform.system()}\n"
             f"Checked modules path: {modules_path}\n"
             f"Make sure DaVinci Resolve is installed."
         )
     except SystemError:
+        lib_name = "fusionscript.so" if platform.system() != "Windows" else "fusionscript.dll"
         return None, (
-            f"fusionscript.dll failed to initialize.\n"
+            f"{lib_name} failed to initialize.\n"
             f"Common causes:\n"
             f"  1. DaVinci Resolve is not running — start it first\n"
             f"  2. Python version not supported — Resolve requires Python 3.6-3.10 (you have {sys.version.split()[0]})\n"
@@ -107,6 +112,11 @@ def gather_state(resolve):
                     items = timeline.GetItemListInTrack("video", ti)
                     count = len(items) if items else 0
                     parts.append(f"  Video track {ti}: {count} clip(s)")
+                    if items:
+                        last_item = items[-1]
+                        fusion_comps = last_item.GetFusionCompCount() if hasattr(last_item, "GetFusionCompCount") else 0
+                        if fusion_comps and fusion_comps > 0:
+                            parts.append(f"    Last clip has {fusion_comps} Fusion comp(s) — use GetFusionCompByIndex(1) to modify")
             except Exception:
                 pass
         else:

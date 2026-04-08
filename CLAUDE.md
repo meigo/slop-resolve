@@ -46,6 +46,8 @@ ruff check . && npx pyright . && python -m pytest tests/ -v
 ```
 
 ## Post-generation checklist
+After adding a new feature or making a significant change, update `README.md` to reflect it.
+
 After writing or modifying Python code, always run the full check:
 1. `ruff check .` — catch unused imports, f-string issues, style problems
 2. `ruff check --fix .` — auto-fix what's fixable

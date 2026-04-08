@@ -5,6 +5,9 @@ import time
 import os
 import os.path
 import traceback
+import urllib.request
+import tempfile
+import shutil
 
 
 def execute_code(code, resolve):
@@ -14,8 +17,14 @@ def execute_code(code, resolve):
     """
     pm = resolve.GetProjectManager()
     project = pm.GetCurrentProject() if pm else None
-    timeline = project.GetCurrentTimeline() if project else None
     media_pool = project.GetMediaPool() if project else None
+    timeline = project.GetCurrentTimeline() if project else None
+
+    # Auto-create a timeline if none exists
+    if timeline is None and media_pool is not None:
+        timeline = media_pool.CreateEmptyTimeline("Timeline 1")
+        if timeline is not None:
+            project.SetCurrentTimeline(timeline)  # type: ignore[union-attr]
     media_storage = resolve.GetMediaStorage()
     fusion = resolve.Fusion()
 
@@ -32,6 +41,9 @@ def execute_code(code, resolve):
         # Useful modules
         "time": time,
         "os": os,
+        "urllib": urllib,
+        "tempfile": tempfile,
+        "shutil": shutil,
     }
 
     # Capture stdout
