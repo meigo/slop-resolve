@@ -101,4 +101,4 @@ class TestBuildSystemPrompt:
 
     def test_contains_role(self, mock_resolve):
         prompt = build_system_prompt(mock_resolve)
-        assert "DaVinci Resolve assistant" in prompt
+        assert "DaVinci Resolve creative assistant" in prompt

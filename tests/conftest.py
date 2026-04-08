@@ -73,4 +73,5 @@ def mock_resolve_no_timeline():
     resolve = make_mock_resolve()
     project = resolve.GetProjectManager().GetCurrentProject()
     project.GetCurrentTimeline.return_value = None
+    project.GetMediaPool().CreateEmptyTimeline.return_value = None
     return resolve

@@ -498,7 +498,6 @@ def _trim_api_reference(ref):
                 continue
             is_class_header = not line.startswith(" ") and stripped and "-->" not in stripped
             is_method_sig = "-->" in stripped
-            is_note = stripped.startswith("#") or stripped.startswith("*")
             if is_class_header or is_method_sig:
                 result.append(line)
         else:

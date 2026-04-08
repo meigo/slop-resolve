@@ -26,19 +26,23 @@ On first run, the setup wizard will:
 
 You don't need to know the Resolve API. Just describe what you want:
 
-- "make a countdown timer" -- creates a Fusion comp with animated text
-- "add a cinematic title card that says Episode 1" -- picks fonts, colors, fade-in
-- "set up a ProRes 422 HQ render to my desktop" -- configures render settings
-- "create a new timeline called Rough Cut with 3 video tracks" -- timeline management
-- "import the video from /Users/me/Downloads/podcast.mp4" -- imports from any local path
-- "grab the video from https://example.com/clip.mp4 and add it to the timeline" -- downloads and imports
-- "add captions to this video" -- uses AI auto-captioning
-- "isolate the voice on the audio track" -- uses AI voice isolation
-- "upscale this footage to 4x" -- uses AI SuperScale
-- "add a glow effect to the text" -- modifies the last creation
-- "make the numbers bigger and change the font" -- iterates on previous work
+| Category | Prompt |
+|----------|--------|
+| Fusion | `make a title card that says Episode 1` |
+| Fusion | `make a 5-second countdown timer` |
+| Fusion | `build an animated intro with a line draw and title fade` |
+| Fusion | `add a lower third: John Smith, Director` |
+| Fusion | `add floating particles on a dark background` |
+| Color | `give this clip a cinematic teal-and-orange look` |
+| Color | `key out the green screen on this clip` |
+| Render | `set up a ProRes 422 HQ render to my desktop` |
+| Media | `import the video from /Users/me/Downloads/podcast.mp4` |
+| Timeline | `create a new timeline called Rough Cut with 3 video tracks` |
+| AI | `add captions to this video` |
+| AI | `isolate the voice on the audio track` |
+| AI | `upscale this footage to 4x` |
 
-The conversation history is preserved, so you can iterate on your work. When you ask to modify something, the agent updates the existing Fusion composition in place rather than creating a new one.
+Conversation history is preserved, so you can iterate: "make the text bigger", "add a glow", "slow down the animation". The agent modifies the existing composition in place.
 
 ## Supported Providers
 
